@@ -1,2 +1,3 @@
-# dat110-project2-chapp
-ChApp client application for project 2 
+Oblig 2 i DAT110
+
+Gruppe: Marcus Korsnes Morlandstø, Jokubas Morsund, Are Dæhlen
