@@ -1,6 +1,7 @@
 package no.hvl.dat110.broker;
 
 import java.util.Set;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import no.hvl.dat110.common.Logger;
@@ -86,33 +87,61 @@ public class Dispatcher extends Stopable {
 		String user = msg.getUser();
 		Logger.log("onConnect:" + msg.toString());
 		storage.addClientSession(user, connection);
+		
+		ClientSession onlineClient = storage.clients.get(user);
+		if(storage.messageBuffer.get(user) != null) {
+			for(Message message : storage.messageBuffer.get(user)) {
+				onlineClient.send(message);
+			}
+		}
 	}
 
 	// called by dispatch upon receiving a disconnect message 
 	public void onDisconnect(DisconnectMsg msg) {
 		String user = msg.getUser();
-		Logger.log("onDisconnect:" + msg.toString());
-		storage.removeClientSession(user);
+		try {
+			storage.messageBuffer.put(user, new ArrayList<Message>());
+			storage.removeClientSession(user);
+			Logger.log("onDisconnect:" + msg.toString());
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void onCreateTopic(CreateTopicMsg msg) {
-		Logger.log("onCreateTopic:" + msg.toString());
-		storage.createTopic(msg.getTopic());
+		try {
+			storage.createTopic(msg.getTopic());
+			Logger.log("onCreateTopic:" + msg.toString());
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void onDeleteTopic(DeleteTopicMsg msg) {
-		Logger.log("onDeleteTopic:" + msg.toString());
-		storage.deleteTopic(msg.getTopic());
+		try {
+			storage.deleteTopic(msg.getTopic());
+			Logger.log("onDeleteTopic:" + msg.toString());
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void onSubscribe(SubscribeMsg msg) {
-		Logger.log("onSubscribe:" + msg.toString());
-		storage.addSubscriber(msg.getUser(), msg.getTopic());
+		try {
+			storage.addSubscriber(msg.getUser(), msg.getTopic());
+			Logger.log("onSubscribe:" + msg.toString());
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void onUnsubscribe(UnsubscribeMsg msg) {
-		Logger.log("onUnsubscribe:" + msg.toString());
-		storage.removeSubscriber(msg.getUser(), msg.getTopic());
+		try {
+			storage.removeSubscriber(msg.getUser(), msg.getTopic());
+			Logger.log("onUnsubscribe:" + msg.toString());
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void onPublish(PublishMsg msg) {
@@ -120,7 +149,11 @@ public class Dispatcher extends Stopable {
 		Set<String> subscribers = storage.getSubscribers(msg.getTopic());
 		for(String findUser : subscribers) {
 			ClientSession session = storage.getSession(findUser);
-			session.send(msg);
+			if(session != null) {
+				session.send(msg);
+			}else {
+				storage.messageBuffer.get(findUser).add(msg);
+			}
 		}
 	}
 }
