@@ -21,7 +21,4 @@ public class UnsubscribeMsg extends Message {
 	public String toString() {
 		return "UnsubscribeTopicMsg [topic=" + topic + "]";
 	}
-	// TODO: 
-	// Implement objectvariables, constructor, get/set-methods, and toString method
-	
 }

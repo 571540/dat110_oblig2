@@ -1,8 +1,8 @@
 package no.hvl.dat110.broker;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
@@ -14,12 +14,12 @@ public class Storage {
 
 	protected ConcurrentHashMap<String, Set<String>> subscriptions;
 	protected ConcurrentHashMap<String, ClientSession> clients;
-	protected ConcurrentHashMap<String, List<Message>> messageBuffer;
+	protected ConcurrentHashMap<String, ArrayList<Message>> messageBuffer;
 
 	public Storage() {
 		subscriptions = new ConcurrentHashMap<String, Set<String>>();
 		clients = new ConcurrentHashMap<String, ClientSession>();
-		messageBuffer = new ConcurrentHashMap<String, List<Message>>();
+		messageBuffer = new ConcurrentHashMap<String, ArrayList<Message>>();
 	}
 
 	public Collection<ClientSession> getSessions() {
@@ -27,9 +27,7 @@ public class Storage {
 	}
 
 	public Set<String> getTopics() {
-
 		return subscriptions.keySet();
-
 	}
 
 	public ClientSession getSession(String user) {
@@ -42,38 +40,21 @@ public class Storage {
 	}
 
 	public void addClientSession(String user, Connection connection) {
-		try {
-			ClientSession addSession = new ClientSession(user, connection);
-			clients.put(user, addSession);
-		} catch (Exception e) {
-			System.out.println("Failed to add new client session.");
-			e.printStackTrace();
-		}
+		ClientSession addSession = new ClientSession(user, connection);
+		clients.put(user, addSession);
 	}
 
 	public void removeClientSession(String user) {
-		if(clients.containsKey(user)) {
-			clients.remove(user);	
-		}else {
-			System.out.println("This client does not exist, client session removal failed.");
-		}
+		clients.remove(user);
 	}
 
 	public void createTopic(String topic) {
-		if(!subscriptions.containsKey(topic)) {
-			Set<String> subscribers = new HashSet<String>();
-			subscriptions.put(topic, subscribers);
-		}else {
-			System.out.println("This topic already exists.");
-		}
+		Set<String> subscribers = new HashSet<String>();
+		subscriptions.put(topic, subscribers);
 	}
 
 	public void deleteTopic(String topic) {
-		if(subscriptions.containsKey(topic)){
-			subscriptions.remove(topic);
-		}else {
-			System.out.println("No such topic exists.");
-		}
+		subscriptions.remove(topic);
 	}
 
 	public void addSubscriber(String user, String topic) {

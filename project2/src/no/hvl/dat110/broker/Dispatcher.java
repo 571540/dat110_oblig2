@@ -3,7 +3,6 @@ package no.hvl.dat110.broker;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import no.hvl.dat110.common.Logger;
 import no.hvl.dat110.common.Stopable;
 import no.hvl.dat110.messages.*;
@@ -85,14 +84,17 @@ public class Dispatcher extends Stopable {
 	// called from Broker after having established the underlying connection
 	public void onConnect(ConnectMsg msg, Connection connection) {
 		String user = msg.getUser();
-		Logger.log("onConnect:" + msg.toString());
-		storage.addClientSession(user, connection);
-		
-		ClientSession onlineClient = storage.clients.get(user);
-		if(storage.messageBuffer.get(user) != null) {
-			for(Message message : storage.messageBuffer.get(user)) {
-				onlineClient.send(message);
+		try {
+			storage.addClientSession(user, connection);
+			ClientSession onlineClient = storage.clients.get(user);
+			if(storage.messageBuffer.get(user) != null) {
+				for(Message message : storage.messageBuffer.get(user)) {
+					onlineClient.send(message);
+				}
 			}
+			Logger.log("onConnect:" + msg.toString());
+		} catch (NullPointerException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -145,15 +147,19 @@ public class Dispatcher extends Stopable {
 	}
 
 	public void onPublish(PublishMsg msg) {
-		Logger.log("onPublish:" + msg.toString());
-		Set<String> subscribers = storage.getSubscribers(msg.getTopic());
-		for(String findUser : subscribers) {
-			ClientSession session = storage.getSession(findUser);
-			if(session != null) {
-				session.send(msg);
-			}else {
-				storage.messageBuffer.get(findUser).add(msg);
+		try {
+			Set<String> subscribers = storage.getSubscribers(msg.getTopic());
+			for(String findUser : subscribers) {
+				ClientSession session = storage.getSession(findUser);
+				if(session != null) {
+					session.send(msg);
+				}else {
+					storage.messageBuffer.get(findUser).add(msg);
+				}
 			}
+			Logger.log("onPublish:" + msg.toString());
+		} catch (NullPointerException e) {
+			e.printStackTrace();
 		}
 	}
 }

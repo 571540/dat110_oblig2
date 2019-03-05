@@ -31,9 +31,4 @@ public class PublishMsg extends Message {
 	public String toString() {
 		return "PublishMsg [topic=" + topic + ", message=" + message + "]";
 	}
-	
-	
-	// TODO: 
-	// Implement objectvariables, constructor, get/set-methods, and toString method
-	
 }

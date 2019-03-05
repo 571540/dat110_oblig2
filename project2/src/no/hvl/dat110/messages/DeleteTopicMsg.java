@@ -21,8 +21,4 @@ public class DeleteTopicMsg extends Message {
 	public String toString() {
 		return "DeleteTopicMsg [topic=" + topic + "]";
 	}
-	
-	// TODO: 
-	// Implement objectvariables, constructor, get/set-methods, and toString method
-	
 }

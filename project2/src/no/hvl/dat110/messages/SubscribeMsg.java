@@ -21,7 +21,4 @@ public class SubscribeMsg extends Message {
 	public String toString() {
 		return "SubscribeMsg [topic=" + topic + "]";
 	}
-	// TODO: 
-	// Implement objectvariables, constructor, get/set-methods, and toString method
-
 }

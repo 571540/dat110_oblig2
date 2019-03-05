@@ -18,7 +18,7 @@ public class DisplayDevice {
 		client.connect();
 		client.createTopic("Temperature");
 		client.subscribe("Temperature");
-		for(int i = 0; i<  COUNT; i++){
+		for(int i = 0; i < COUNT; i++){
 			Message message = client.receive();
 			System.out.println(message);
 		}
